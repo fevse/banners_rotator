@@ -19,7 +19,7 @@ type GRPCConf struct {
 
 type DBConf struct {
 	Migration string
-	DSN string
+	DSN       string
 }
 
 func NewConfig(configFile string) (c Config, err error) {

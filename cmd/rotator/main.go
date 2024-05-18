@@ -36,13 +36,13 @@ func main() {
 		os.Exit(1)
 	}
 	rotator := app.New(storage)
-	
+
 	err = storage.Migrate(config.DB.Migration)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	
+
 	grpcserver := grpcserver.NewServer(rotator)
 
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
