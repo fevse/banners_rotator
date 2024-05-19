@@ -7,8 +7,11 @@ LDFLAGS := -X main.release="develop" -X main.buildDate=$(shell date -u +%Y-%m-%d
 build:
 	go build -v -o $(BIN) -ldflags "$(LDFLAGS)" ./cmd/rotator
 
-run: build
-	$(BIN) 
+# run: build
+# 	$(BIN) 
+
+run:
+	docker compose -f ./deployments/docker-compose.yaml up 
 
 test:
 	go test -race -v ./internal/...
