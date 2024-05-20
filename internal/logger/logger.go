@@ -6,7 +6,7 @@ import (
 )
 
 type Logger struct {
-	infoLog *log.Logger
+	infoLog  *log.Logger
 	errorLog *log.Logger
 }
 

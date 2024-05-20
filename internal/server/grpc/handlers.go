@@ -41,7 +41,7 @@ func (r *RotatorServer) Choose(_ context.Context, m *rotatorpb.SlotGroup) (*rota
 	gid := m.GroupID
 	bid, err := r.App.Storage.ChooseBannerToShow(int(sid), int(gid))
 	pbbid := &rotatorpb.Banner{BannerID: int64(bid)}
-	info := fmt.Sprintf("banner %v was choosen for slot %v and group %v", bid, sid, gid)
+	info := fmt.Sprintf("banner %v was chosen for slot %v and group %v", bid, sid, gid)
 	r.Logger.Info(info)
 	return pbbid, err
 }

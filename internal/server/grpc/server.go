@@ -25,7 +25,7 @@ type Logger interface {
 
 func NewServer(app *app.App, logg Logger) *RotatorServer {
 	return &RotatorServer{
-		App: app,
+		App:    app,
 		Logger: logg,
 	}
 }
@@ -47,7 +47,11 @@ func (r *RotatorServer) Stop() {
 }
 
 func loggingInterceptor(logg Logger) grpc.UnaryServerInterceptor {
-	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp any, err error) {
+	return func(
+		ctx context.Context,
+		req any, info *grpc.UnaryServerInfo,
+		handler grpc.UnaryHandler,
+	) (resp any, err error) {
 		logg.Info(info.FullMethod + " " + fmt.Sprintf("%v", req))
 		return handler(ctx, req)
 	}

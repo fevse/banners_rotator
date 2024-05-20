@@ -2,7 +2,7 @@ package app
 
 type App struct {
 	Storage Storage
-	Logger Logger
+	Logger  Logger
 }
 
 type Storage interface {
@@ -20,6 +20,6 @@ type Logger interface {
 func New(storage Storage, logger Logger) *App {
 	return &App{
 		Storage: storage,
-		Logger: logger,
+		Logger:  logger,
 	}
 }
