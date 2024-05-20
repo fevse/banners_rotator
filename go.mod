@@ -26,6 +26,7 @@ require (
 require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pressly/goose v2.7.0+incompatible
+	github.com/rabbitmq/amqp091-go v1.10.0
 	github.com/stretchr/testify v1.9.0
 	golang.org/x/crypto v0.23.0 // indirect
 	golang.org/x/text v0.15.0 // indirect
