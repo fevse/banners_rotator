@@ -4,8 +4,6 @@ services:
     build:
       context: ../
       dockerfile: ./deployments/Dockerfile
-      args:
-        - CONFIG_FILE_NAME=config
     container_name: rotator
     environment:
       WAIT_HOSTS: postgres:5432

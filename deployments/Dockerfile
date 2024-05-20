@@ -1,4 +1,3 @@
-# TODO
 FROM golang:1.22 as build
 
 ENV BIN_FILE /opt/rotator/rotator-app
