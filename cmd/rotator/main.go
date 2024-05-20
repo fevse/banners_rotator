@@ -11,6 +11,7 @@ import (
 
 	"github.com/fevse/banners_rotator/internal/app"
 	"github.com/fevse/banners_rotator/internal/config"
+	"github.com/fevse/banners_rotator/internal/logger"
 	grpcserver "github.com/fevse/banners_rotator/internal/server/grpc"
 	sqlstorage "github.com/fevse/banners_rotator/internal/storage/sql"
 )
@@ -29,21 +30,22 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+	logg := logger.New()
 	storage := sqlstorage.New()
 	err = storage.Connect(config.DB.DSN)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	rotator := app.New(storage)
+	rotator := app.New(storage, logg)
 
 	err = storage.Migrate(config.DB.Migration)
 	if err != nil {
-		fmt.Println(err)
+		logg.Error("migration error: " + err.Error())
 		os.Exit(1)
 	}
 
-	grpcserver := grpcserver.NewServer(rotator)
+	grpcserver := grpcserver.NewServer(rotator, logg)
 
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
 	defer cancel()
@@ -54,12 +56,13 @@ func main() {
 		defer cancel()
 		grpcserver.Stop()
 		storage.Close()
+		logg.Info("service stopped")
 	}()
 
-	fmt.Println("service is running")
+	logg.Info("service is running...")
 
 	if err := grpcserver.Start(config.GRPCServer.Network, config.GRPCServer.Address); err != nil {
-		fmt.Println(err)
+		logg.Error("failed to stop grpc server: " + err.Error())
 		cancel()
 		os.Exit(1) //nolint:gocritic
 	}

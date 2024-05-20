@@ -39,7 +39,7 @@ func (s *Storage) Migrate(dir string) error {
 	return nil
 }
 
-func (s *Storage) Add(slot, banner int) error {
+func (s *Storage) AddBannerToSlot(slot, banner int) error {
 	groups := make([]int, 0)
 	err := s.db.Select(&groups, `SELECT group_id FROM sgroup`)
 	if err != nil {
@@ -53,12 +53,12 @@ func (s *Storage) Add(slot, banner int) error {
 	return err
 }
 
-func (s *Storage) Delete(slot, banner int) error {
+func (s *Storage) DeleteBannerFromSlot(slot, banner int) error {
 	_, err := s.db.Exec(`DELETE FROM storage WHERE banner_id=$1 AND slot_id=$2`, banner, slot)
 	return err
 }
 
-func (s *Storage) Click(banner, slot, group int) error {
+func (s *Storage) ClickBanner(banner, slot, group int) error {
 	reward := make([]float64, 0)
 	view := make([]int, 0)
 	click := make([]int, 0)
@@ -95,7 +95,10 @@ func (s *Storage) Click(banner, slot, group int) error {
 	ban.Clicks[id[0]] = click[0]
 	ban.Views[id[0]] = view[0]
 	ban.Rewards[id[0]] = reward[0]
-	ban.Update(id[0], 1.1)
+	err = ban.Update(id[0], 1.1)
+	if err != nil {
+		return err
+	}
 
 	_, err = s.db.Exec(`UPDATE storage 
 		SET click=$1, reward=$2
@@ -103,7 +106,7 @@ func (s *Storage) Click(banner, slot, group int) error {
 	return err
 }
 
-func (s *Storage) Choose(slot, group int) (banner int, err error) {
+func (s *Storage) ChooseBannerToShow(slot, group int) (banner int, err error) {
 	view := make([]int, 0)
 	click := make([]int, 0)
 	reward := make([]float64, 0)
