@@ -13,6 +13,9 @@ build:
 run:
 	docker compose -f ./deployments/docker-compose.yaml up 
 
+down:
+	docker compose -f ./deployments/docker-compose.yaml down 
+
 test:
 	go test -race -v ./internal/...
 

@@ -2,6 +2,7 @@ package bandit
 
 import (
 	"errors"
+	"fmt"
 	"math"
 )
 
@@ -24,10 +25,13 @@ func New(n int) (Bandit, error) {
 	return Bandit{}, ErrorInvalidNumberArms
 }
 
-func (b *Bandit) Update(arm int, reward float64) {
+func (b *Bandit) Update(arm int, reward float64) error {
 	b.Clicks[arm]++
+	if b.Views[arm] == 0 {
+		return fmt.Errorf("views = 0, should to choose banner to view")
+	}
 	b.Rewards[arm] = (b.Rewards[arm] * ((float64(b.Clicks[arm]) - 1) + reward)) / float64(b.Views[arm])
-	// TODO: add error or smt if views == 0
+	return nil
 }
 
 func (b *Bandit) SelectArm() int {
