@@ -12,6 +12,7 @@ import (
 	"github.com/fevse/banners_rotator/internal/app"
 	"github.com/fevse/banners_rotator/internal/config"
 	"github.com/fevse/banners_rotator/internal/logger"
+	"github.com/fevse/banners_rotator/internal/queue"
 	grpcserver "github.com/fevse/banners_rotator/internal/server/grpc"
 	sqlstorage "github.com/fevse/banners_rotator/internal/storage/sql"
 )
@@ -37,7 +38,14 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	rotator := app.New(storage, logg)
+	rabbit := queue.New(config.Rabbit.URI, config.Rabbit.Queue, config.Rabbit.Exchange, config.Rabbit.Kind)
+	err = rabbit.Connect()
+	if err != nil {
+		logg.Error("rabbit error: " + err.Error())
+		os.Exit(1)
+	}
+
+	rotator := app.New(storage, logg, rabbit)
 
 	err = storage.Migrate(config.DB.Migration)
 	if err != nil {
@@ -45,7 +53,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	grpcserver := grpcserver.NewServer(rotator, logg)
+	grpcserver := grpcserver.NewServer(rotator)
 
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
 	defer cancel()
@@ -56,6 +64,7 @@ func main() {
 		defer cancel()
 		grpcserver.Stop()
 		storage.Close()
+		rabbit.Close()
 		logg.Info("service stopped")
 	}()
 

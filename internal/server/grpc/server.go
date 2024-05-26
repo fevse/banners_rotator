@@ -14,8 +14,6 @@ type RotatorServer struct {
 	rotatorpb.UnimplementedRotatorServer
 	Server *grpc.Server
 	App    *app.App
-	Logger Logger
-	// TODO: add logger and app
 }
 
 type Logger interface {
@@ -23,30 +21,29 @@ type Logger interface {
 	Error(string)
 }
 
-func NewServer(app *app.App, logg Logger) *RotatorServer {
+func NewServer(app *app.App) *RotatorServer {
 	return &RotatorServer{
-		App:    app,
-		Logger: logg,
+		App: app,
 	}
 }
 
 func (r *RotatorServer) Start(network string, address string) error {
 	listen, err := net.Listen(network, address)
 	if err != nil {
-		r.Logger.Error("failed to start grpcserver" + err.Error())
+		r.App.Logger.Error("failed to start grpcserver" + err.Error())
 	}
-	r.Server = grpc.NewServer(grpc.UnaryInterceptor(loggingInterceptor(r.Logger)))
+	r.Server = grpc.NewServer(grpc.UnaryInterceptor(loggingInterceptor(r.App.Logger)))
 	rotatorpb.RegisterRotatorServer(r.Server, r)
-	r.Logger.Info("server is running: " + address)
+	r.App.Logger.Info("server is running: " + address)
 	return r.Server.Serve(listen)
 }
 
 func (r *RotatorServer) Stop() {
-	r.Logger.Info("server stopped")
+	r.App.Logger.Info("server stopped")
 	r.Server.GracefulStop()
 }
 
-func loggingInterceptor(logg Logger) grpc.UnaryServerInterceptor {
+func loggingInterceptor(logg app.Logger) grpc.UnaryServerInterceptor {
 	return func(
 		ctx context.Context,
 		req any, info *grpc.UnaryServerInfo,

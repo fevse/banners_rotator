@@ -6,13 +6,15 @@ services:
       dockerfile: ./deployments/Dockerfile
     container_name: rotator
     environment:
-      WAIT_HOSTS: postgres:5432
+      RABBITMQ_SERVER: rabbitmq
+      POSTGRES_SERVER: postgres
     restart: on-failure
     ports:
       - "50051:50051"
     expose:
       - 50051
     depends_on:
+      - rabbitmq
       - postgres
     networks:
       rotator:
@@ -38,6 +40,29 @@ services:
       timeout: 5s
       retries: 5
       start_period: 5s
+    networks:
+      rotator:
+
+  rabbitmq:
+    image: rabbitmq:3.13.2-alpine
+    container_name: rabbitmq
+    environment:
+      - RABBITMQ_PROTOCOL=amqp
+      - RABBITMQ_USERNAME=guest
+      - RABBITMQ_PASSWORD=guest
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    expose:
+      - 5672
+      - 15672
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 3
     networks:
       rotator:
 

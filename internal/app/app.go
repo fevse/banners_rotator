@@ -3,6 +3,7 @@ package app
 type App struct {
 	Storage Storage
 	Logger  Logger
+	Rabbit  Rabbit
 }
 
 type Storage interface {
@@ -17,9 +18,14 @@ type Logger interface {
 	Error(string)
 }
 
-func New(storage Storage, logger Logger) *App {
+type Rabbit interface {
+	Publish(string) error
+}
+
+func New(storage Storage, logger Logger, rabbit Rabbit) *App {
 	return &App{
 		Storage: storage,
 		Logger:  logger,
+		Rabbit:  rabbit,
 	}
 }
