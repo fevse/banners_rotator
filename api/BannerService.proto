@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package rotator;
+option go_package = "./pb/;rotatorpb";
+
+import "google/protobuf/empty.proto";
+
+service Rotator {
+    rpc Add(SlotBanner) returns (google.protobuf.Empty) {}
+    rpc Delete(SlotBanner) returns (google.protobuf.Empty) {}
+    rpc Click(BannerSlotGroup) returns (google.protobuf.Empty) {}
+    rpc Choose(SlotGroup) returns (Banner) {}
+}
+
+message SlotBanner {
+    int64 SlotID = 1;
+	int64 BannerID = 2;
+}
+
+message BannerSlotGroup {
+    int64 BannerID = 1;
+    int64 SlotID = 2;
+    int64 GroupID = 3;
+}
+
+message SlotGroup {
+    int64 SlotID = 1;
+    int64 GroupID = 2;
+}
+
+message Banner {
+    int64 BannerID = 1;
+}
