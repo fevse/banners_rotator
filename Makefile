@@ -8,13 +8,14 @@ build:
 	go build -v -o $(BIN) -ldflags "$(LDFLAGS)" ./cmd/rotator
 
 # run: build
-# 	$(BIN) 
+# 	$(BIN)
 
 run:
-	docker compose -f ./deployments/docker-compose.yaml up 
+	docker compose -f ./deployments/docker-compose.yaml up
 
 down:
-	docker compose -f ./deployments/docker-compose.yaml down 
+	docker compose -f ./deployments/docker-compose.yaml down
+	docker rmi deployments-rotator
 
 test:
 	go test -race -v ./internal/...
@@ -23,6 +24,6 @@ install-lint-deps:
 	(which golangci-lint > /dev/null) || curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(shell go env GOPATH)/bin v1.57.2
 
 lint: install-lint-deps
-	golangci-lint run 
+	golangci-lint run
 
 .PHONY: build run test lint
