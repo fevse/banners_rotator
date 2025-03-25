@@ -35,7 +35,7 @@ func main() {
 	storage := sqlstorage.New()
 	err = storage.Connect(config.DB.DSN)
 	if err != nil {
-		fmt.Println(err)
+		logg.Error("storage error: " + err.Error())
 		os.Exit(1)
 	}
 	rabbit := queue.New(config.Rabbit.URI, config.Rabbit.Queue, config.Rabbit.Exchange, config.Rabbit.Kind)

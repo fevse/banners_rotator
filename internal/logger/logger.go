@@ -1,25 +1,26 @@
 package logger
 
 import (
-	"log"
+	"log/slog"
 	"os"
 )
 
 type Logger struct {
-	infoLog  *log.Logger
-	errorLog *log.Logger
+	Log *slog.Logger
+	// errorLog *log.Logger
 }
 
 func New() *Logger {
-	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
-	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
-	return &Logger{infoLog: infoLog, errorLog: errorLog}
+	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
+	// infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+	// errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+	return &Logger{Log: logger}
 }
 
 func (l Logger) Info(msg string) {
-	l.infoLog.Println(msg)
+	l.Log.Info(msg)
 }
 
 func (l Logger) Error(msg string) {
-	l.errorLog.Fatal(msg)
+	l.Log.Error(msg)
 }
